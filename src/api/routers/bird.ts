@@ -8,10 +8,7 @@ import { config } from '../../config.js';
 
 const db = new DbConnection(config.lmdbPath);
 const birdRepo = new BirdRepository(db);
-const ticketRepo = new TicketRepository(db, {
-  leaseTimeoutMs: config.leaseTimeoutMs,
-  maxRetries: config.maxRetries,
-});
+const ticketRepo = new TicketRepository(db);
 const birdService = new BirdService(birdRepo, ticketRepo);
 const birdController = new BirdController(birdService);
 

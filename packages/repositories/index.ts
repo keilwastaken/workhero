@@ -1,2 +1,2 @@
 export { BirdRepository } from './birds/index.js';
-export { TicketRepository, type TicketRepositoryOptions } from './tickets/index.js';
+export { TicketRepository } from './tickets/index.js';

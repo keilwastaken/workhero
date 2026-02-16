@@ -18,7 +18,7 @@ describe('Resilience: LMDB durability', () => {
     // --- Session 1: write data ---
     const db1 = new DbConnection(tmpDir);
     const birdRepo1 = new BirdRepository(db1);
-    const ticketRepo1 = new TicketRepository(db1, { leaseTimeoutMs: 30_000, maxRetries: 3 });
+    const ticketRepo1 = new TicketRepository(db1);
 
     await birdRepo1.create({
       id: 'b1',
@@ -38,7 +38,7 @@ describe('Resilience: LMDB durability', () => {
     // --- Session 2: reopen and verify ---
     const db2 = new DbConnection(tmpDir);
     const birdRepo2 = new BirdRepository(db2);
-    const ticketRepo2 = new TicketRepository(db2, { leaseTimeoutMs: 30_000, maxRetries: 3 });
+    const ticketRepo2 = new TicketRepository(db2);
 
     const bird = birdRepo2.findById('b1');
     expect(bird).toBeDefined();
@@ -66,7 +66,7 @@ describe('Resilience: LMDB durability', () => {
     // --- Session 1: write and claim ---
     const db1 = new DbConnection(tmpDir);
     const birdRepo1 = new BirdRepository(db1);
-    const ticketRepo1 = new TicketRepository(db1, { leaseTimeoutMs: 30_000, maxRetries: 3 });
+    const ticketRepo1 = new TicketRepository(db1);
 
     await birdRepo1.create({
       id: 'b1',
@@ -88,7 +88,7 @@ describe('Resilience: LMDB durability', () => {
 
     // --- Session 2: reopen and verify ---
     const db2 = new DbConnection(tmpDir);
-    const ticketRepo2 = new TicketRepository(db2, { leaseTimeoutMs: 30_000, maxRetries: 3 });
+    const ticketRepo2 = new TicketRepository(db2);
 
     const ticket = ticketRepo2.findById('t1');
     expect(ticket).toBeDefined();

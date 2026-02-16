@@ -5,10 +5,7 @@ import { TicketRepository } from '@workhero/repositories';
 import { config } from '../../config.js';
 
 const db = new DbConnection(config.lmdbPath);
-const ticketRepo = new TicketRepository(db, {
-  leaseTimeoutMs: config.leaseTimeoutMs,
-  maxRetries: config.maxRetries,
-});
+const ticketRepo = new TicketRepository(db);
 
 const adminRouter: RouterType = Router();
 

@@ -2,25 +2,15 @@ import type { Database } from 'lmdb';
 import type { Ticket } from '@workhero/db';
 import type { DbConnection } from '@workhero/db';
 
-export interface TicketRepositoryOptions {
-  leaseTimeoutMs: number;
-  maxRetries: number;
-}
-
 export class TicketRepository {
   private tickets: Database<Ticket, string>;
   private entityIndex: Database<string, string>;
   private queue: Database<boolean, string>;
-  private options: TicketRepositoryOptions;
 
-  constructor(
-    private readonly db: DbConnection,
-    options: TicketRepositoryOptions,
-  ) {
+  constructor(private readonly db: DbConnection) {
     this.tickets = db.table<Ticket>('tickets');
     this.entityIndex = db.table<string>('tickets-entity-index');
     this.queue = db.table<boolean>('tickets-queue');
-    this.options = options;
   }
 
   async create(ticket: Ticket): Promise<Ticket> {
@@ -74,42 +64,6 @@ export class TicketRepository {
     });
 
     return claimed;
-  }
-
-  reclaimStaleTickets(): number {
-    const now = Date.now();
-    const { leaseTimeoutMs, maxRetries } = this.options;
-    let reclaimed = 0;
-
-    this.db.root.transactionSync(() => {
-      for (const { key, value: ticket } of this.tickets.getRange({})) {
-        if (ticket.status !== 'processing' || !ticket.claimedAt) continue;
-
-        const claimedTime = new Date(ticket.claimedAt).getTime();
-        if (now - claimedTime < leaseTimeoutMs) continue;
-
-        if (ticket.retryCount >= maxRetries) {
-          const failed: Ticket = {
-            ...ticket,
-            status: 'failed',
-            completedAt: new Date().toISOString(),
-          };
-          this.tickets.putSync(key, failed);
-        } else {
-          const { workerId: _, claimedAt: __, ...rest } = ticket;
-          const requeued: Ticket = {
-            ...rest,
-            status: 'queued',
-            retryCount: ticket.retryCount + 1,
-          };
-          this.tickets.putSync(key, requeued);
-          this.queue.putSync(ticket.id, true);
-          reclaimed++;
-        }
-      }
-    });
-
-    return reclaimed;
   }
 
   async complete(id: string, result: unknown): Promise<Ticket | undefined> {

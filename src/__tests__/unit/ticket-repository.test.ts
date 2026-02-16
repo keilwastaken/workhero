@@ -12,7 +12,7 @@ let tmpDir: string;
 beforeEach(() => {
   tmpDir = mkdtempSync(join(tmpdir(), 'workhero-test-'));
   db = new DbConnection(tmpDir);
-  ticketRepo = new TicketRepository(db, { leaseTimeoutMs: 30_000, maxRetries: 3 });
+  ticketRepo = new TicketRepository(db);
 });
 
 afterEach(async () => {
@@ -75,43 +75,6 @@ describe('TicketRepository', () => {
     ticketRepo.claimNextQueued('w-0');
 
     const failed = await ticketRepo.fail('t1');
-    expect(failed?.status).toBe('failed');
-    expect(failed?.completedAt).toBeDefined();
-  });
-
-  it('reclaims stale tickets by re-queuing', async () => {
-    await ticketRepo.create({ id: 't1', entityId: 'b1', status: 'queued', retryCount: 0 });
-    const claimed = ticketRepo.claimNextQueued('w-0');
-    expect(claimed?.status).toBe('processing');
-
-    // Backdate claimedAt to simulate lease timeout
-    const ticket = ticketRepo.findById('t1')!;
-    const stale = { ...ticket, claimedAt: new Date(Date.now() - 60_000).toISOString() };
-    const ticketsDb = db.table('tickets');
-    await ticketsDb.put('t1', stale);
-
-    const reclaimed = ticketRepo.reclaimStaleTickets();
-    expect(reclaimed).toBe(1);
-
-    const requeued = ticketRepo.findById('t1');
-    expect(requeued?.status).toBe('queued');
-    expect(requeued?.retryCount).toBe(1);
-  });
-
-  it('reclaimStaleTickets marks as failed when retries exhausted', async () => {
-    await ticketRepo.create({ id: 't1', entityId: 'b1', status: 'queued', retryCount: 3 });
-    ticketRepo.claimNextQueued('w-0');
-
-    // Backdate claimedAt to simulate lease timeout
-    const ticket = ticketRepo.findById('t1')!;
-    const stale = { ...ticket, claimedAt: new Date(Date.now() - 60_000).toISOString() };
-    const ticketsDb = db.table('tickets');
-    await ticketsDb.put('t1', stale);
-
-    const reclaimed = ticketRepo.reclaimStaleTickets();
-    expect(reclaimed).toBe(0); // not reclaimed, permanently failed
-
-    const failed = ticketRepo.findById('t1');
     expect(failed?.status).toBe('failed');
     expect(failed?.completedAt).toBeDefined();
   });

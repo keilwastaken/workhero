@@ -6,10 +6,7 @@ import { logTrace } from './api/trace.js';
 
 const db = new DbConnection(config.lmdbPath);
 const birdRepo = new BirdRepository(db);
-const ticketRepo = new TicketRepository(db, {
-  leaseTimeoutMs: config.leaseTimeoutMs,
-  maxRetries: config.maxRetries,
-});
+const ticketRepo = new TicketRepository(db);
 const deps = { ticketRepo, birdRepo };
 
 const shutdownController = new AbortController();

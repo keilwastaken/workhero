@@ -16,7 +16,7 @@ beforeEach(() => {
   tmpDir = mkdtempSync(join(tmpdir(), 'workhero-test-'));
   db = new DbConnection(tmpDir);
   birdRepo = new BirdRepository(db);
-  ticketRepo = new TicketRepository(db, { leaseTimeoutMs: 30_000, maxRetries: 3 });
+  ticketRepo = new TicketRepository(db);
   service = new BirdService(birdRepo, ticketRepo);
 });
 

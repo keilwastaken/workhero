@@ -15,7 +15,7 @@ const WORKER_COUNT = 20;
 beforeEach(async () => {
   tmpDir = mkdtempSync(join(tmpdir(), 'workhero-test-'));
   db = new DbConnection(tmpDir);
-  ticketRepo = new TicketRepository(db, { leaseTimeoutMs: 30_000, maxRetries: 3 });
+  ticketRepo = new TicketRepository(db);
 
   for (let i = 0; i < TICKET_COUNT; i++) {
     await ticketRepo.create({

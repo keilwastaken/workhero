@@ -42,7 +42,7 @@ Data access layer. Import: `import { BirdRepository, TicketRepository } from '@w
 | Path | Purpose |
 |------|---------|
 | `birds/index.ts` | `BirdRepository` — create, findById, findByName, updateStatus |
-| `tickets/index.ts` | `TicketRepository` — create, claimNextQueued, complete, fail. Constructor takes `(db, { leaseTimeoutMs, maxRetries })` |
+| `tickets/index.ts` | `TicketRepository` — create, findAll, findById, findByEntityId, claimNextQueued, complete, fail |
 | `index.ts` | Re-exports |
 
 ### @workhero/queue
