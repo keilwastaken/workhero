@@ -1,0 +1,14 @@
+services:
+  app:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      - PORT=3000
+      - LMDB_PATH=/data
+      - WORKER_CONCURRENCY=${WORKER_CONCURRENCY:-5}
+    volumes:
+      - lmdb-data:/data
+
+volumes:
+  lmdb-data:

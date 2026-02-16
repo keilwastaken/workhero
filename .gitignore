@@ -1,0 +1,32 @@
+# Dependencies
+node_modules
+
+# Build output
+dist
+
+# Local data
+data
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Logs
+*.log
+pnpm-debug.log*
+
+# Test coverage
+coverage
+
+# OS
+.DS_Store
+
+# pnpm
+.pnpm-store
+
+# Vitest build artifacts
+vitest.config.js
+vitest.config.d.ts
+vitest.config.d.ts.map
+vitest.config.js.map
