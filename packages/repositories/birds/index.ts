@@ -20,10 +20,20 @@ export class BirdRepository {
     return bird;
   }
 
+  /**
+   * Find a bird by ID
+   * @param id - The ID of the bird to find
+   * @returns The bird if found, otherwise undefined
+   */
   findById(id: string): Bird | undefined {
     return this.birds.get(id);
   }
 
+  /**
+   * Find a bird by name
+   * @param name - The name of the bird to find
+   * @returns The bird if found, otherwise undefined
+   */
   findByName(name: string): Bird | undefined {
     const birdId = this.nameIndex.get(name);
     if (!birdId) return undefined;

@@ -13,6 +13,11 @@ export class TicketRepository {
     this.queue = db.table<boolean>('tickets-queue');
   }
 
+  /**
+   * Create a new ticket
+   * @param ticket - The ticket to create
+   * @returns The created ticket
+   */
   async create(ticket: Ticket): Promise<Ticket> {
     await this.db.root.transaction(() => {
       this.tickets.put(ticket.id, ticket);
@@ -23,6 +28,10 @@ export class TicketRepository {
     return ticket;
   }
 
+  /**
+   * Find all tickets
+   * @returns All tickets
+   */
   findAll(): Ticket[] {
     const results: Ticket[] = [];
     for (const { value } of this.tickets.getRange({})) {
@@ -31,16 +40,30 @@ export class TicketRepository {
     return results;
   }
 
+  /**
+   * Find a ticket by ID
+   * @param id - The ID of the ticket to find
+   * @returns The ticket if found, otherwise undefined
+   */
   findById(id: string): Ticket | undefined {
     return this.tickets.get(id);
   }
-
+  /**
+   * Find a ticket by entity ID
+   * @param entityId - The entity ID of the ticket to find (ex. bird ID)
+   * @returns The ticket if found, otherwise undefined
+   */
   findByEntityId(entityId: string): Ticket | undefined {
     const ticketId = this.entityIndex.get(entityId);
     if (!ticketId) return undefined;
     return this.tickets.get(ticketId);
   }
 
+  /**
+   * Claim the next queued ticket for a worker
+   * @param workerId - The ID of the worker claiming the ticket
+   * @returns The claimed ticket if found, otherwise null
+   */
   claimNextQueued(workerId: string): Ticket | null {
     let claimed: Ticket | null = null;
 
@@ -66,6 +89,12 @@ export class TicketRepository {
     return claimed;
   }
 
+  /**
+   * Complete a ticket with a result
+   * @param id - The ID of the ticket to complete
+   * @param result - The result of the ticket
+   * @returns The completed ticket if found, otherwise undefined
+   */
   async complete(id: string, result: unknown): Promise<Ticket | undefined> {
     const existing = this.tickets.get(id);
     if (!existing) return undefined;
@@ -80,6 +109,11 @@ export class TicketRepository {
     return updated;
   }
 
+  /**
+   * Fail a ticket
+   * @param id - The ID of the ticket to fail
+   * @returns The failed ticket if found, otherwise undefined
+   */
   async fail(id: string): Promise<Ticket | undefined> {
     const existing = this.tickets.get(id);
     if (!existing) return undefined;

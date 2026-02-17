@@ -7,13 +7,13 @@ extendZodWithOpenApi(z);
 
 export const CreateBirdCommandSchema = z
   .object({
-    name: z.string().openapi({ example: 'brown pelican' }),
+    name: z.string().openapi({ example: 'brown pelican' }).min(1, { message: 'name is required' }),
   })
   .openapi('CreateBirdCommand');
 
 export const GetBirdByNameQuerySchema = z
   .object({
-    name: z.string().openapi({ example: 'brown pelican' }),
+    name: z.string().openapi({ example: 'brown pelican' }).min(1, { message: 'name is required' }),
   })
   .openapi('GetBirdByNameQuery');
 
