@@ -252,6 +252,10 @@ With more time, I would add:
 - **Dead letter queue** — separate LMDB table for tickets that exhaust retries, with `GET /dead-letters` for inspection and `POST /dead-letters/:id/replay` to re-queue
 - **Rate limiting** on the Wikipedia API to avoid being blocked
 - **Node.js cluster** or separate process scaling for CPU-bound research tasks
+- **Dependency Injection** I want too make Tickets into an ITicket that I can pass into your repos too create a job
 - **agents** langchain web tools for research
 - **nginx** reverse proxy — load balancing, rate limiting, SSL termination
 - **dashboard** Web UI to view LMDB state and worker activity in real time, instead of polling APIs and tailing logs
+- **clean up** We have a lot of status checks everywhere I want too consolidate it somehow
+- **cron job** We should have a cron job that cleans up any stale data
+
